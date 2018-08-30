@@ -10,7 +10,7 @@ function validate(data) {
   let errors = {};
   if (data.title === '') errors.title = "Can't be empty";
   if (data.cover === '') errors.cover = "Can't be empty";
-  const isValid = Object.keys(errors).length === 0
+  const isValid = Object.keys(errors).length === 0;
   return { errors, isValid };
 }
 
@@ -47,35 +47,37 @@ mongodb.MongoClient.connect(dbUrl, function(err, db) {
         { $set: { title, cover } },
         { returnOriginal: false },
         (err, result) => {
-          if(err) { res.status(500).json({ errors: { global: err } }); return; }
+          if(err) { 
+            res.status(500).json({ errors: { global: err }});
+            return; 
+          }
           res.json({ game: result.value });
         }
       )
     } else {
       res.status(400).json({ errors });
     }
-  })
+  });
 
   app.delete('/api/games/:_id', (req, res) => {
-    db.collection('games').deleteOne({ _id: new mongodb.ObjectId(req.params._id) }, (err, r) => {
-      if(err) { res.status(500).json({ errors: { global: err }}); return; }
-      res.json({})
-    })
-  })
+    db.collection('games').deleteOne({ _id: new mongodb.ObjectId(req.params._id) }, (err) => {
+      if(err) { 
+        res.status(500).json({ errors: { global: err }});
+        return;
+      }
+      res.json({});
+    });
+  });
 
   app.get('/api/games/:_id', (req, res) => {
     db.collection('games').findOne({ _id: new mongodb.ObjectId(req.params._id) }, (err, game) => {
-      res.json({ game })
-    })
-  })
+      res.json({ game });
+    });
+  });
 
   app.use((req, res) => {
-    res.status(404).json({
-      errors: {
-        global: "Still working on it. Please try again later when we implement it"
-      }
-    });
-  })
+    res.status(404).json({ errors: { global: "Still working on it. Please try again later when we implement it" }});
+  });
 
   app.listen(8080, () => console.log('Server is running on localhost:8080'));
 
